@@ -1,0 +1,742 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>The Society · anonymous Q&A</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(145deg, #f0f4ff 0%, #ffffff 70%);
+      position: relative;
+      padding: 16px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -30%;
+      left: -20%;
+      width: 150%;
+      height: 150%;
+      background: radial-gradient(circle at 70% 30%, rgba(255, 180, 200, 0.2) 0%, transparent 40%),
+                  radial-gradient(circle at 30% 70%, rgba(130, 200, 255, 0.15) 0%, transparent 40%);
+      animation: bgShift 20s infinite alternate ease-in-out;
+      z-index: -1;
+    }
+
+    @keyframes bgShift {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      100% { transform: translate(-2%, -2%) rotate(2deg); }
+    }
+
+    .app {
+      width: 100%;
+      max-width: 1200px;
+      min-height: 650px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 3rem;
+      box-shadow: 0 30px 60px rgba(0, 10, 30, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.9) inset;
+      overflow: hidden;
+      transition: box-shadow 0.4s, transform 0.2s;
+      border: 1px solid rgba(255,255,255,0.7);
+    }
+
+    .app:hover {
+      box-shadow: 0 40px 80px rgba(0, 20, 50, 0.2);
+    }
+
+    .screen {
+      width: 100%;
+      height: 100%;
+      padding: 2.2rem 2rem;
+      transition: opacity 0.5s cubic-bezier(0.2, 0.9, 0.3, 1), transform 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
+      will-change: opacity, transform;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .fade-enter {
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+    }
+
+    .fade-visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    h1, h2, h3 {
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #0a1a2f;
+    }
+
+    /* LANDING PAGE SPECIFIC */
+    .landing {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .landing h1 {
+      font-size: clamp(3rem, 12vw, 5.8rem);
+      background: linear-gradient(135deg, #0a2b5e, #2b4f8e, #c44569);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.2rem;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+      line-height: 1.1;
+    }
+
+    .landing h1 span {
+      display: block;  /* makes "welcome to" and "thesociety" on separate lines */
+      font-size: 0.7em; /* adjust if needed, but we keep same size */
+    }
+
+    .sub-glow {
+      font-size: clamp(1.2rem, 5vw, 1.8rem);
+      font-weight: 600;
+      color: #2c3e66;
+      background: rgba(255,255,255,0.5);
+      display: inline-block;
+      padding: 0.3rem 2rem;
+      border-radius: 60px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+      margin: 0.8rem 0;
+    }
+
+    .anonymous-note {
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #2b4f8e;
+      background: rgba(255,255,255,0.7);
+      padding: 0.6rem 1.8rem;
+      border-radius: 50px;
+      border: 1px dashed #c44569;
+      margin: 1.2rem 0 1rem;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .enter-prompt {
+      font-size: clamp(1.4rem, 6vw, 2.2rem);
+      font-weight: 700;
+      padding: 1.2rem 3rem;
+      border: none;
+      border-radius: 80px;
+      background: white;
+      color: #0a1a2f;
+      cursor: pointer;
+      transition: all 0.3s;
+      animation: gentleFloat 4s infinite alternate;
+      box-shadow: 0 15px 30px rgba(0, 30, 80, 0.2), 0 4px 10px rgba(0,0,0,0.05);
+      border: 1px solid rgba(255,255,255,0.8);
+      margin-top: 0.8rem;
+    }
+
+    @keyframes gentleFloat {
+      0% { transform: translateY(0); box-shadow: 0 15px 30px rgba(0, 30, 80, 0.15); }
+      100% { transform: translateY(-6px); box-shadow: 0 25px 40px rgba(0, 40, 100, 0.25); }
+    }
+
+    .enter-prompt:hover {
+      background: #f0f5ff;
+      transform: scale(1.02) translateY(-4px);
+      box-shadow: 0 25px 45px rgba(0, 60, 130, 0.25);
+    }
+
+    /* ----- RECTANGULAR CARDS (centered) ----- */
+    .menu-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .option-card {
+      background: white;
+      border-radius: 2rem;
+      padding: 2.5rem 1.8rem;
+      text-align: center;
+      transition: all 0.25s ease-out;
+      cursor: pointer;
+      box-shadow: 0 20px 35px -8px rgba(0, 20, 50, 0.15);
+      border: 1px solid rgba(255,255,255,0.9);
+      color: #0a1a2f;
+      width: 300px;
+      max-width: 90vw;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .option-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      box-shadow: 0 35px 50px -10px rgba(0, 40, 80, 0.3);
+      background: #ffffff;
+      border-color: #c44569;
+    }
+
+    .option-card i {
+      font-size: 4rem;
+      background: linear-gradient(145deg, #2b4f8e, #c44569);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1.2rem;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1));
+    }
+
+    .option-card h2 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin-bottom: 0.6rem;
+      color: #0a1a2f;
+    }
+
+    .option-card p {
+      color: #2d3f5e;
+      font-weight: 500;
+      font-size: 1.1rem;
+      max-width: 240px;
+    }
+
+    /* back button */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 2rem;
+      padding: 0.8rem 2rem;
+      background: white;
+      border-radius: 40px;
+      border: 1px solid rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #0a1a2f;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.03);
+    }
+
+    .back-btn:hover {
+      background: #f5f9ff;
+      padding-left: 2.5rem;
+      border-color: #c44569;
+      box-shadow: 0 10px 20px rgba(0, 30, 70, 0.1);
+    }
+
+    /* lists */
+    .question-list, .answer-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+      scrollbar-width: thin;
+      scrollbar-color: #c44569 #f0d5e0;
+    }
+
+    .question-card, .answer-card {
+      background: white;
+      border-radius: 2rem;
+      padding: 2rem;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
+      transition: 0.2s;
+      animation: slideUp 0.5s ease-out;
+      color: #0a1a2f;
+    }
+
+    @keyframes slideUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    .question-card:hover {
+      border-color: #c44569;
+      box-shadow: 0 20px 35px rgba(196, 69, 105, 0.1);
+    }
+
+    .question-text {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #0a1a2f;
+      word-break: break-word;
+    }
+
+    .meta {
+      color: #5e6f8d;
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .answer-input-area {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 1rem;
+    }
+
+    .answer-input {
+      flex: 1 1 200px;
+      background: #f8faff;
+      border: 2px solid #e0e8f5;
+      border-radius: 40px;
+      padding: 0.9rem 1.5rem;
+      color: #0a1a2f;
+      font-size: 1rem;
+      font-weight: 500;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .answer-input:focus {
+      border-color: #2b4f8e;
+      box-shadow: 0 0 0 4px rgba(43, 79, 142, 0.1);
+    }
+
+    .answer-btn {
+      background: linear-gradient(145deg, #2b4f8e, #c44569);
+      border: none;
+      border-radius: 40px;
+      padding: 0 2.5rem;
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid rgba(255,255,255,0.3);
+      box-shadow: 0 10px 20px rgba(0, 30, 70, 0.2);
+    }
+
+    .answer-btn:hover {
+      background: linear-gradient(145deg, #1f3a66, #a13557);
+      transform: scale(1.02);
+      box-shadow: 0 15px 25px rgba(196, 69, 105, 0.3);
+    }
+
+    /* ask form */
+    .ask-form {
+      background: white;
+      border-radius: 2.5rem;
+      padding: 2.5rem;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.03);
+      max-width: 700px;
+      margin: 1.5rem auto;
+    }
+
+    .ask-form label {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0a1a2f;
+    }
+
+    .ask-form textarea {
+      width: 100%;
+      background: #f8faff;
+      border: 2px solid #e0e8f5;
+      border-radius: 2rem;
+      padding: 1.2rem;
+      color: #0a1a2f;
+      font-size: 1.2rem;
+      font-weight: 500;
+      resize: vertical;
+      margin: 1.2rem 0;
+    }
+
+    .ask-form textarea:focus {
+      border-color: #2b4f8e;
+      box-shadow: 0 0 0 4px rgba(43, 79, 142, 0.1);
+    }
+
+    .ask-form button {
+      background: white;
+      border: 2px solid #2b4f8e;
+      padding: 1rem 2.5rem;
+      border-radius: 60px;
+      color: #2b4f8e;
+      font-size: 1.3rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .ask-form button:hover {
+      background: #2b4f8e;
+      color: white;
+      box-shadow: 0 15px 30px rgba(43, 79, 142, 0.3);
+      transform: scale(1.02);
+    }
+
+    .single-answer {
+      background: #f8faff;
+      border-radius: 1.5rem;
+      padding: 1rem 1.8rem;
+      margin-top: 0.8rem;
+      border-left: 6px solid #c44569;
+      font-size: 1.3rem;
+      font-weight: 500;
+      color: #0a1a2f;
+      transition: 0.2s;
+    }
+
+    .single-answer:hover {
+      border-left-color: #2b4f8e;
+      background: #ffffff;
+    }
+
+    .empty-note {
+      padding: 3rem;
+      text-align: center;
+      color: #5e6f8d;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    /* scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f0d5e0;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(145deg, #2b4f8e, #c44569);
+      border-radius: 10px;
+    }
+
+    /* mobile fine-tuning */
+    @media (max-width: 700px) {
+      .menu-grid {
+        gap: 1.5rem;
+      }
+      .option-card {
+        width: 280px;
+        padding: 2rem 1rem;
+        min-height: 250px;
+      }
+      .option-card h2 {
+        font-size: 2rem;
+      }
+      .option-card p {
+        font-size: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .screen {
+        padding: 1.5rem 1rem;
+      }
+      .option-card {
+        width: 100%;
+        max-width: 320px;
+      }
+      .question-text {
+        font-size: 1.4rem;
+      }
+      .anonymous-note {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- LANDING PAGE with anonymity message -->
+    <div id="landingScreen" class="screen landing fade-visible">
+      <h1>
+        <span>welcome to</span>
+        <span>thesociety</span>
+      </h1>
+      <div class="sub-glow">↩ real questions · real answers</div>
+      <div class="anonymous-note">
+        <i class="fas fa-incognito" style="margin-right: 8px;"></i> ask and answer anonymously · no account needed
+      </div>
+      <div class="enter-prompt" id="enterBtn">
+        ➡️ press enter <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+      </div>
+      <div style="margin-top: 2.5rem; color: #5e6f8d; font-weight: 500;">⎆  begin  ⎆</div>
+    </div>
+
+    <!-- MENU with rectangular centered cards -->
+    <div id="menuScreen" class="screen hidden fade-enter">
+      <div style="max-width: 1000px; margin: 0 auto;">
+        <h2 style="font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; color: #0a1a2f; text-align: center;">the society</h2>
+        <div style="height: 4px; width: 120px; background: linear-gradient(90deg, #2b4f8e, #c44569); margin: 0 auto 2rem;"></div>
+        <div class="menu-grid">
+          <div class="option-card" id="optAnswer">
+            <i class="fas fa-pen-to-square"></i>
+            <h2>answer</h2>
+            <p>unanswered questions from the internet</p>
+          </div>
+          <div class="option-card" id="optFind">
+            <i class="fas fa-magnifying-glass"></i>
+            <h2>find answer</h2>
+            <p>ask the internet something new</p>
+          </div>
+          <div class="option-card" id="optRead">
+            <i class="fas fa-book-open"></i>
+            <h2>read all answers</h2>
+            <p>every answer the internet has given</p>
+          </div>
+        </div>
+        <div style="text-align: center; color: #5e6f8d; font-weight: 500; margin-top: 1rem;">choose your path</div>
+      </div>
+    </div>
+
+    <!-- ANSWER VIEW -->
+    <div id="answerView" class="screen hidden fade-enter">
+      <div class="back-btn" id="backFromAnswer"><i class="fas fa-chevron-left"></i> back</div>
+      <h2 style="font-size: clamp(2rem,6vw,3rem); font-weight: 800; color: #0a1a2f;">✎ answer the internet</h2>
+      <div id="unansweredContainer" class="question-list"></div>
+    </div>
+
+    <!-- FIND VIEW -->
+    <div id="findView" class="screen hidden fade-enter">
+      <div class="back-btn" id="backFromFind"><i class="fas fa-chevron-left"></i> back</div>
+      <h2 style="font-size: clamp(2rem,6vw,3rem); font-weight: 800; color: #0a1a2f;">🔎 ask the internet</h2>
+      <div class="ask-form">
+        <label>what do you want to know?</label>
+        <textarea id="newQuestionInput" rows="3" placeholder="your question..."></textarea>
+        <button id="submitQuestion"><i class="fas fa-paper-plane" style="margin-right: 8px;"></i> send question</button>
+      </div>
+      <div style="color: #5e6f8d; font-weight: 500; text-align: center;">the society remembers</div>
+    </div>
+
+    <!-- READ ALL ANSWERS VIEW -->
+    <div id="readView" class="screen hidden fade-enter">
+      <div class="back-btn" id="backFromRead"><i class="fas fa-chevron-left"></i> back</div>
+      <h2 style="font-size: clamp(2rem,6vw,3rem); font-weight: 800; color: #0a1a2f;">📜 all answers</h2>
+      <div id="allAnswersContainer" class="answer-list"></div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const STORAGE_KEY = 'thesociety_qa';
+      let questions = [];
+
+      function loadFromStorage() {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          try {
+            questions = JSON.parse(stored);
+          } catch (e) {
+            questions = [];
+          }
+        } else {
+          questions = [];
+        }
+      }
+
+      function saveToStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(questions));
+      }
+
+      loadFromStorage();
+
+      const landing = document.getElementById('landingScreen');
+      const menu = document.getElementById('menuScreen');
+      const answerView = document.getElementById('answerView');
+      const findView = document.getElementById('findView');
+      const readView = document.getElementById('readView');
+
+      const backFromAnswer = document.getElementById('backFromAnswer');
+      const backFromFind = document.getElementById('backFromFind');
+      const backFromRead = document.getElementById('backFromRead');
+
+      const optAnswer = document.getElementById('optAnswer');
+      const optFind = document.getElementById('optFind');
+      const optRead = document.getElementById('optRead');
+      const enterBtn = document.getElementById('enterBtn');
+
+      const unansweredContainer = document.getElementById('unansweredContainer');
+      const allAnswersContainer = document.getElementById('allAnswersContainer');
+      const newQuestionInput = document.getElementById('newQuestionInput');
+      const submitQuestion = document.getElementById('submitQuestion');
+
+      function showScreen(screenToShow) {
+        [landing, menu, answerView, findView, readView].forEach(s => {
+          s.classList.add('hidden');
+          s.classList.remove('fade-visible');
+          s.classList.add('fade-enter');
+        });
+        screenToShow.classList.remove('hidden');
+        void screenToShow.offsetWidth;
+        screenToShow.classList.remove('fade-enter');
+        screenToShow.classList.add('fade-visible');
+      }
+
+      showScreen(landing);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !landing.classList.contains('hidden')) {
+          showScreen(menu);
+        }
+      });
+
+      enterBtn.addEventListener('click', () => showScreen(menu));
+
+      optAnswer.addEventListener('click', () => {
+        renderUnanswered();
+        showScreen(answerView);
+      });
+
+      optFind.addEventListener('click', () => showScreen(findView));
+
+      optRead.addEventListener('click', () => {
+        renderAllAnswers();
+        showScreen(readView);
+      });
+
+      backFromAnswer.addEventListener('click', () => showScreen(menu));
+      backFromFind.addEventListener('click', () => showScreen(menu));
+      backFromRead.addEventListener('click', () => showScreen(menu));
+
+      function renderUnanswered() {
+        const unanswered = questions.filter(q => !q.answers || q.answers.length === 0);
+        if (unanswered.length === 0) {
+          unansweredContainer.innerHTML = `<div class="empty-note"><i class="fas fa-spa" style="font-size:3rem; color:#c44569;"></i><p>no unanswered questions — ask something!</p></div>`;
+          return;
+        }
+        let html = '';
+        unanswered.forEach(q => {
+          html += `
+            <div class="question-card" data-id="${q.id}">
+              <div class="question-text">“${escapeHtml(q.text)}”</div>
+              <div class="meta"><i class="far fa-clock"></i> asked · just now</div>
+              <div class="answer-input-area">
+                <input type="text" class="answer-input" id="input_${q.id}" placeholder="your answer..." autocomplete="off">
+                <button class="answer-btn" onclick="submitAnswer(${q.id})">answer</button>
+              </div>
+            </div>
+          `;
+        });
+        unansweredContainer.innerHTML = html;
+      }
+
+      function escapeHtml(unsafe) {
+        return unsafe.replace(/[&<>"]/g, function(m) {
+          if (m === '&') return '&amp;';
+          if (m === '<') return '&lt;';
+          if (m === '>') return '&gt;';
+          if (m === '"') return '&quot;';
+          return m;
+        });
+      }
+
+      window.submitAnswer = (qId) => {
+        const input = document.getElementById(`input_${qId}`);
+        const answerText = input.value.trim();
+        if (answerText === '') return;
+
+        const question = questions.find(q => q.id === qId);
+        if (question) {
+          if (!question.answers) question.answers = [];
+          question.answers.push(answerText);
+          saveToStorage();
+          input.value = '';
+          renderUnanswered();
+          showToast('✓ answer recorded');
+        }
+      };
+
+      function showToast(msg) {
+        const toast = document.createElement('div');
+        toast.innerText = msg;
+        toast.style.position = 'fixed';
+        toast.style.bottom = '30px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.background = 'white';
+        toast.style.padding = '1rem 2.5rem';
+        toast.style.borderRadius = '60px';
+        toast.style.border = '2px solid #c44569';
+        toast.style.color = '#0a1a2f';
+        toast.style.fontWeight = '700';
+        toast.style.fontSize = '1.2rem';
+        toast.style.zIndex = '9999';
+        toast.style.boxShadow = '0 15px 30px rgba(0,0,0,0.1)';
+        toast.style.animation = 'fadeToast 2.5s forwards';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2400);
+      }
+
+      const style = document.createElement('style');
+      style.innerHTML = `
+        @keyframes fadeToast {
+          0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+          15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+          85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+          100% { opacity: 0; transform: translateX(-50%) translateY(-15px); }
+        }
+      `;
+      document.head.appendChild(style);
+
+      function renderAllAnswers() {
+        const withAnswers = questions.filter(q => q.answers && q.answers.length > 0);
+        if (withAnswers.length === 0) {
+          allAnswersContainer.innerHTML = `<div class="empty-note"><i class="fas fa-dove"></i><p>no answers yet — be the first</p></div>`;
+          return;
+        }
+        let html = '';
+        withAnswers.forEach(q => {
+          html += `<div class="question-card">`;
+          html += `<div class="question-text">🕸️ ${escapeHtml(q.text)}</div>`;
+          q.answers.forEach(ans => {
+            html += `<div class="single-answer"><i class="fas fa-chevron-right" style="color:#c44569; margin-right:10px;"></i>${escapeHtml(ans)}</div>`;
+          });
+          html += `</div>`;
+        });
+        allAnswersContainer.innerHTML = html;
+      }
+
+      submitQuestion.addEventListener('click', () => {
+        const text = newQuestionInput.value.trim();
+        if (text === '') {
+          showToast('✎ type something');
+          return;
+        }
+        const newId = questions.length ? Math.max(...questions.map(q => q.id)) + 1 : 1;
+        questions.push({ id: newId, text: text, answers: [] });
+        saveToStorage();
+        newQuestionInput.value = '';
+        showToast('✓ question sent to the internet');
+      });
+    })();
+  </script>
+</body>
+</html>
